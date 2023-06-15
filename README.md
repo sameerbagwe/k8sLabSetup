@@ -463,9 +463,10 @@ echo https://$DASHBOARD_HOST:$DASHBOARD_PORT
 ```bash
 k get secret dashboard -o jsonpath="{.data.token}" | base64 --decode
 ```
+![dashboard-token](/images/dashboard_token.png)
 
 ![dashboard](/images/dashboard.png)
-![dashboard-token](/images/dashboard_token.png)
+
 
 ### F] Install Hubble - Network, Service & Security Observability for Kubernetes
 
