@@ -8,7 +8,7 @@
 - [Is there single push Automated Script](#is-there-single-push-automated-script)
 - [Installation Steps for a Multi-node Kubernetes Cluster](#installation-steps-for-a-multi-node-kubernetes-cluster)
   - [Download and setup Kubespray](#a-download-and-setup-kubespray)
-  - [Cluster Hardening Profile](#b-cluster-hardening-profile)
+  - [Cluster Hardening Profile (OPTIONAL for StudyLab)](#b-cluster-hardening-profile-optional-for-studylab)
   - [Deploy a Security Hardened Kubernetes Cluster](#c-deploy-a-security-hardened-kubernetes-cluster)
   - [Setup CLI, Access the Cluster & Label the Nodes](#c-setup-cli-access-the-cluster--label-the-nodes)
   - [Remove kube-proxy and Install Cilium CNI Plugin](#d-remove-kube-proxy-and-install-cilium-cni-plugin)
@@ -188,7 +188,7 @@ EOF
 ansible-playbook -i inventory/k8cluster/hosts.yml ./initialsetup.yml -e ansible_user=ubuntu
 ```
 
-### B] Cluster Hardening Profile
+### B] Cluster Hardening Profile (OPTIONAL for StudyLab)
 
 ##### :memo: Create the hardening yaml
 <details>
@@ -336,7 +336,13 @@ cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.
 sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 ```
 
-##### :memo: Run the deployment
+##### :memo: Run the deployment for StudyLab
+```bash
+cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root 
+```
+
+##### :memo: Run the deployment with Hardening Profile 
+##### :warning: Skip if previous option selected
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
 ```
