@@ -8,7 +8,8 @@
 - [Is there single push Automated Script](#is-there-single-push-automated-script)
 - [Installation Steps for a Multi-node Kubernetes Cluster](#installation-steps-for-a-multi-node-kubernetes-cluster)
   - [Download and setup Kubespray](#a-download-and-setup-kubespray)
-  - [Deploy the Kubernetes Cluster](#b-deploy-the-kubernetes-cluster)
+  - [Cluster Hardening Profile](#b-cluster-hardening-profile)
+  - [Deploy a Security Hardened Kubernetes Cluster](#c-deploy-a-security-hardened-kubernetes-cluster)
   - [Setup CLI, Access the Cluster & Label the Nodes](#c-setup-cli-access-the-cluster--label-the-nodes)
   - [Remove kube-proxy and Install Cilium CNI Plugin](#d-remove-kube-proxy-and-install-cilium-cni-plugin)
   - [Access the cluster with Kubernetes Dashboard](#e-access-the-cluster-with-kubernetes-dashboard)
@@ -187,7 +188,107 @@ EOF
 ansible-playbook -i inventory/k8cluster/hosts.yml ./initialsetup.yml -e ansible_user=ubuntu
 ```
 
-### B] Deploy the Kubernetes Cluster
+### B] Cluster Hardening Profile
+
+##### :memo: Create the hardening yaml
+```bash
+cd $PROJECT_HOME/kubespray
+cat > hardening.yml <<EOF
+# Hardening
+---
+
+## kube-apiserver
+authorization_modes: ['Node', 'RBAC']
+kube_apiserver_request_timeout: 120s
+kube_apiserver_service_account_lookup: true
+
+# enable kubernetes audit
+kubernetes_audit: true
+audit_log_path: "/var/log/kube-apiserver-log.json"
+audit_log_maxage: 30
+audit_log_maxbackups: 10
+audit_log_maxsize: 100
+
+tls_min_version: VersionTLS12
+tls_cipher_suites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+
+# enable encryption at rest
+kube_encrypt_secret_data: true
+kube_encryption_resources: [secrets]
+kube_encryption_algorithm: "secretbox"
+
+kube_apiserver_enable_admission_plugins:
+  - EventRateLimit
+  - AlwaysPullImages
+  - ServiceAccount
+  - NamespaceLifecycle
+  - NodeRestriction
+  - LimitRanger
+  - ResourceQuota
+  - MutatingAdmissionWebhook
+  - ValidatingAdmissionWebhook
+  - PodNodeSelector
+  - PodSecurity
+kube_apiserver_admission_control_config_file: true
+# EventRateLimit plugin configuration
+kube_apiserver_admission_event_rate_limits:
+  limit_1:
+    type: Namespace
+    qps: 50
+    burst: 100
+    cache_size: 2000
+  limit_2:
+    type: User
+    qps: 50
+    burst: 100
+kube_profiling: false
+
+## kube-controller-manager
+kube_controller_manager_bind_address: 127.0.0.1
+kube_controller_terminated_pod_gc_threshold: 50
+kube_controller_feature_gates: ["RotateKubeletServerCertificate=true"]
+
+## kube-scheduler
+kube_scheduler_bind_address: 127.0.0.1
+
+## etcd
+etcd_deployment_type: kubeadm
+
+## kubelet
+kubelet_authorization_mode_webhook: true
+kubelet_authentication_token_webhook: true
+kube_read_only_port: 0
+kubelet_rotate_server_certificates: true
+kubelet_protect_kernel_defaults: true
+kubelet_event_record_qps: 1
+kubelet_rotate_certificates: true
+kubelet_streaming_connection_idle_timeout: "5m"
+kubelet_make_iptables_util_chains: true
+kubelet_feature_gates: ["RotateKubeletServerCertificate=true", "SeccompDefault=true"]
+kubelet_seccomp_default: true
+kubelet_systemd_hardening: true
+# In case you have multiple interfaces in your
+# control plane nodes and you want to specify the right
+# IP addresses, kubelet_secure_addresses allows you
+# to specify the IP from which the kubelet
+# will receive the packets.
+#kubelet_secure_addresses: "192.168.10.110 192.168.10.111 192.168.10.112"
+
+# additional configurations
+kube_owner: root
+kube_cert_group: root
+
+# create a default Pod Security Configuration and deny running of insecure pods
+# kube_system namespace is exempted by default
+kube_pod_security_use_default: true
+kube_pod_security_default_enforce: restricted
+EOF
+```
+
+### C] Deploy a Security Hardened Kubernetes Cluster
 
 ##### :memo: Backup original files
 ```bash
@@ -237,7 +338,7 @@ sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 
 ##### :memo: Run the deployment
 ```bash
-cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root 
+cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yaml" -e ansible_user=ubuntu -b --become-user=root 
 ```
 
 ##### :memo: Expected Output
