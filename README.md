@@ -171,7 +171,7 @@ declare -a IPS=( $(multipass list --format csv |tail -n +2 |cut -d "," -f3 | xar
 CONFIG_FILE=inventory/k8cluster/hosts.yml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
-**Step 7:** Update the Ubuntu nodes with ansible play
+**Step 7:** Update the Ubuntu nodes with Ansible play
 
 ```bash
 cat > initialsetup.yml <<EOF
