@@ -4,7 +4,7 @@
 - [Overview](#overview)
 - [What's my Rig for this tutorial and Recommendation](#whats-my-rig-for-this-tutorial-and-recommendation)
 - [Tools used to Deploy the K8s Cluster](#tools-used-to-deploy-the-k8s-cluster)
-- [Additional topics in this tutorial: Cilium, Hubble, Istio Service Mesh, CIS-Kube-bench](#additional-topics-in-this-tutorial-install-cilium-hubble-istio-service-mesh-cis-benchmarks-with-kube-bench)
+- [Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, Security Benchmark Tools](#additional-topics-in-this-tutorial-install-cilium-hubble-istio-service-mesh-security-benchmark-tools)
 - [Is there single push Automated Script](#is-there-single-push-automated-script)
 - [Installation Steps for a Multi-node Kubernetes Cluster](#installation-steps-for-a-multi-node-kubernetes-cluster)
   - [Download and setup Kubespray](#a-download-and-setup-kubespray)
@@ -50,11 +50,12 @@ Alternatively, there are several Low-touch, Turn-key solutions for setting up a 
 - **[Ansible](https://www.ansible.com/overview/how-ansible-works):** Tool used by kubespray to deploy the K8s cluster
 - Shell scripting 
 
-## Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, CIS Benchmarks with Kube-bench
+## Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, Security Benchmark Tools
 - **[Cilium](https://external.ink?to=https://cilium.io/get-started/):** Cilium is an open source, cloud native solution for providing, securing, and observing network connectivity between workloads, fueled by the revolutionary Kernel technology eBPF.
 - **[Hubble](https://external.ink?to=https://github.com/cilium/hubble#what-is-hubble):** Hubble is a fully distributed networking and security observability platform for cloud native workloads. It is built on top of Cilium and eBPF to enable deep visibility into the communication and behavior of services as well as the networking infrastructure in a completely transparent manner.
 - **[Istio Service Mesh](https://external.ink?to=https://istio.io/latest/about/service-mesh/):** A service mesh is a dedicated infrastructure layer that you can add to your applications. It allows you to transparently add capabilities like observability, traffic management, and security, without adding them to your own code. Application developers can focus on Business logic than worrying about the infrastructure layer logic.
 - **[Kube-Bench](https://external.ink?to=https://github.com/aquasecurity/kube-bench):** kube-bench is a tool that checks whether Kubernetes is deployed securely by running the checks documented in the CIS Kubernetes Benchmark.
+- **[KubeScape](https://external.ink?to=https://github.com/kubescape/kubescape):** An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. Kubescape is an open-source Kubernetes security platform. It includes risk analysis, security compliance, and misconfiguration scanning. 
 
 
 ## Is there single push Automated Script?
