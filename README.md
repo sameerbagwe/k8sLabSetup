@@ -64,8 +64,7 @@ The goal of this tutorial is to be interactive and walk with the steps involved 
 
 ### A] Download and setup Kubespray
 
-**Step 1:**  We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
-
+##### :memo: We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
 ```bash
 # Set desired Project Home
 export PROJECT_HOME=$HOME/Projects/k8s
@@ -89,17 +88,14 @@ export K8S_VERSION=v1.27.2
 export CLUSTER_NAME=homelab
 ```
 
-**Step 2:** Install Multipass and copy the SSH private key to home directory of current Mac user.
-
+##### :memo: Install Multipass and copy the SSH private key to home directory of current Mac user.
 ```bash
 brew install --cask multipass
 ```
 
 ```bash
 sudo cp /var/root/Library/Application\ Support/multipassd/ssh-keys/id_rsa $MULTIPASS_KEY && sudo chown $USER $MULTIPASS_KEY
-``` 
-
-**Step 3:** Provision the virtual nodes for K8s cluster.
+```
 
 ##### :memo: Create the virtual nodes
 ```bash
@@ -116,13 +112,11 @@ done
 multipass list
 ```
 
-**Step 4:** Download Kubespray and install the pre-requisite packages with python-pip
-
-##### :memo: Python may already exist on MacOS
+##### :memo: Download Kubespray and install the pre-requisite packages with python-pip
+##### :bulb: Python may already exist on MacOS
 ```bash
 brew list python
 ```
-
 ##### :memo: ...but if not then install it
 ```bash
 brew install python3
@@ -148,8 +142,7 @@ pip3 install -r requirements.txt
 bash
 ```
 
-**Step 5:** Set the Ansible Private key and Playbook log file
-
+##### :memo: Set the Ansible Private key and Playbook log file
 ```bash
 cd $PROJECT_HOME/kubespray
 
@@ -162,8 +155,7 @@ log_path = '"$PROJECT_HOME"'/kubespray/playbook.log \
 ' ansible.cfg
 ```
 
-**Step 6:** Generate the Ansible Host Inventory
-
+##### :memo: Generate the Ansible Host Inventory
 ```bash
 cd $PROJECT_HOME/kubespray && \
 cp -r inventory/sample inventory/k8cluster && \
@@ -171,8 +163,7 @@ declare -a IPS=( $(multipass list --format csv |tail -n +2 |cut -d "," -f3 | xar
 CONFIG_FILE=inventory/k8cluster/hosts.yml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
-**Step 7:** Update the Ubuntu nodes with Ansible play
-
+##### :memo: Update the Ubuntu nodes with Ansible play
 ```bash
 cat > initialsetup.yml <<EOF
 - hosts: all
@@ -196,8 +187,6 @@ ansible-playbook -i inventory/k8cluster/hosts.yml ./initialsetup.yml -e ansible_
 ```
 
 ### B] Deploy the Kubernetes Cluster
-
-**Step 1:** Configure the K8s cluster parameters
 
 ##### :memo: Backup original files
 ```bash
@@ -245,15 +234,12 @@ cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.
 sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 ```
 
-**Step 2:** Deploy the K8s cluster
-
 ##### :memo: Run the deployment
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root 
 ```
 
 ##### :memo: Expected Output
-
 ```
 PLAY RECAP  
 localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
@@ -304,8 +290,6 @@ download : download_container | Download image if required
 
 ### C] Setup CLI, Access the Cluster & Label the Nodes
 
-**Step 1:** Setup Kube config to authenticate and access the cluster
-
 ##### :memo: Connect to the first node
 ```bash
 multipass shell "$NODE_PREFIX"1
@@ -325,8 +309,7 @@ bash
 mkdir .kube && sudo cp /etc/kubernetes/admin.conf .kube/config && sudo chown ubuntu .kube/config
 ```
 
-**Step 2:** List the nodes and Label worker nodes as per your preference. 
-
+##### :memo: List the nodes and Label worker nodes as per your preference. 
 ```bash
 for i in $(k get nodes -o custom-columns=NAME:.metadata.name --no-headers)
 do
@@ -336,8 +319,6 @@ k get nodes
 ```
 
 ### D] Remove kube-proxy and Install Cilium CNI Plugin
-
-**Step 1:** Uninstall Kube-proxy
 
 ##### :memo: Delete the daemonset and configmap
 ```bash 
@@ -420,8 +401,6 @@ k get nodes
 
 ### E] Access the cluster with Kubernetes Dashboard
 
-**Step 1:** Configure Kubernetes Dashboard
-
 ##### :memo: Create service account
 ```bash
 ksn kube-system && k create sa dashboard 
@@ -451,8 +430,6 @@ k patch svc kubernetes-dashboard  --type='json' -p '[{"op":"replace","path":"/sp
 export DASHBOARD_PORT=$(k get svc kubernetes-dashboard -o jsonpath='{.spec.ports[].nodePort}')
 export DASHBOARD_HOST=$(k get po -l k8s-app=kubernetes-dashboard -o jsonpath='{.items[0].status.hostIP}')
 ```
-
-**Step 2:** Access the Dashboard in Browser of your host Desktop/Laptop
 
 ##### :memo: Open the URL in your browser
 ```bash
@@ -632,7 +609,18 @@ KBENCH_NAME=`curl -s \
 sudo apt -y install ./$KBENCH_NAME
 ```
 
-##### :memo: Run the CIS benchmark
+##### :memo: Run the CIS benchmark with Kube-Bench
 ```bash
 kube-bench  
+```
+##### :memo: Download & Install kubescape tool
+```bash
+curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash && \
+echo "export PATH=\$PATH:/home/ubuntu/.kubescape/bin" >> .bashrc && \
+bash
+```
+
+##### :memo: Run the CIS benchmark with KubeScape
+```bash
+kubescape scan framework CIS --enable-host-scan -v --format pdf --output results.pdf
 ```
