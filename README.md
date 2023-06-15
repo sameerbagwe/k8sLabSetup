@@ -4,11 +4,12 @@
 - [Overview](#overview)
 - [What's my Rig for this tutorial and Recommendation](#whats-my-rig-for-this-tutorial-and-recommendation)
 - [Tools used to Deploy the K8s Cluster](#tools-used-to-deploy-the-k8s-cluster)
-- [Additional topics in this tutorial: Cilium, Hubble, Istio Service Mesh, CIS-Kube-bench](#additional-topics-in-this-tutorial-install-cilium-hubble-istio-service-mesh-cis-benchmarks-with-kube-bench)
+- [Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, Security Benchmark Tools](#additional-topics-in-this-tutorial-install-cilium-hubble-istio-service-mesh-security-benchmark-tools)
 - [Is there single push Automated Script](#is-there-single-push-automated-script)
 - [Installation Steps for a Multi-node Kubernetes Cluster](#installation-steps-for-a-multi-node-kubernetes-cluster)
   - [Download and setup Kubespray](#a-download-and-setup-kubespray)
-  - [Deploy the Kubernetes Cluster](#b-deploy-the-kubernetes-cluster)
+  - [Cluster Hardening Profile (OPTIONAL for StudyLab)](#b-cluster-hardening-profile-optional-for-studylab)
+  - [Deploy the Kubernetes Cluster](#c-deploy-the-kubernetes-cluster)
   - [Setup CLI, Access the Cluster & Label the Nodes](#c-setup-cli-access-the-cluster--label-the-nodes)
   - [Remove kube-proxy and Install Cilium CNI Plugin](#d-remove-kube-proxy-and-install-cilium-cni-plugin)
   - [Access the cluster with Kubernetes Dashboard](#e-access-the-cluster-with-kubernetes-dashboard)
@@ -50,11 +51,12 @@ Alternatively, there are several Low-touch, Turn-key solutions for setting up a 
 - **[Ansible](https://www.ansible.com/overview/how-ansible-works):** Tool used by kubespray to deploy the K8s cluster
 - Shell scripting 
 
-## Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, CIS Benchmarks with Kube-bench
+## Additional topics in this tutorial: Install Cilium, Hubble, Istio Service Mesh, Security Benchmark Tools
 - **[Cilium](https://external.ink?to=https://cilium.io/get-started/):** Cilium is an open source, cloud native solution for providing, securing, and observing network connectivity between workloads, fueled by the revolutionary Kernel technology eBPF.
 - **[Hubble](https://external.ink?to=https://github.com/cilium/hubble#what-is-hubble):** Hubble is a fully distributed networking and security observability platform for cloud native workloads. It is built on top of Cilium and eBPF to enable deep visibility into the communication and behavior of services as well as the networking infrastructure in a completely transparent manner.
 - **[Istio Service Mesh](https://external.ink?to=https://istio.io/latest/about/service-mesh/):** A service mesh is a dedicated infrastructure layer that you can add to your applications. It allows you to transparently add capabilities like observability, traffic management, and security, without adding them to your own code. Application developers can focus on Business logic than worrying about the infrastructure layer logic.
 - **[Kube-Bench](https://external.ink?to=https://github.com/aquasecurity/kube-bench):** kube-bench is a tool that checks whether Kubernetes is deployed securely by running the checks documented in the CIS Kubernetes Benchmark.
+- **[KubeScape](https://external.ink?to=https://github.com/kubescape/kubescape):** An open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. Kubescape is an open-source Kubernetes security platform. It includes risk analysis, security compliance, and misconfiguration scanning. 
 
 
 ## Is there single push Automated Script?
@@ -64,8 +66,7 @@ The goal of this tutorial is to be interactive and walk with the steps involved 
 
 ### A] Download and setup Kubespray
 
-**Step 1:**  We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
-
+##### :memo: We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
 ```bash
 # Set desired Project Home
 export PROJECT_HOME=$HOME/Projects/k8s
@@ -89,17 +90,14 @@ export K8S_VERSION=v1.27.2
 export CLUSTER_NAME=homelab
 ```
 
-**Step 2:** Install Multipass and copy the SSH private key to home directory of current Mac user.
-
+##### :memo: Install Multipass and copy the SSH private key to home directory of current Mac user.
 ```bash
 brew install --cask multipass
 ```
 
 ```bash
 sudo cp /var/root/Library/Application\ Support/multipassd/ssh-keys/id_rsa $MULTIPASS_KEY && sudo chown $USER $MULTIPASS_KEY
-``` 
-
-**Step 3:** Provision the virtual nodes for K8s cluster.
+```
 
 ##### :memo: Create the virtual nodes
 ```bash
@@ -116,13 +114,11 @@ done
 multipass list
 ```
 
-**Step 4:** Download Kubespray and install the pre-requisite packages with python-pip
-
-##### :memo: Python may already exist on MacOS
+##### :memo: Download Kubespray and install the pre-requisite packages with python-pip
+##### :bulb: Python may already exist on MacOS
 ```bash
 brew list python
 ```
-
 ##### :memo: ...but if not then install it
 ```bash
 brew install python3
@@ -148,8 +144,7 @@ pip3 install -r requirements.txt
 bash
 ```
 
-**Step 5:** Set the Ansible Private key and Playbook log file
-
+##### :memo: Set the Ansible Private key and Playbook log file
 ```bash
 cd $PROJECT_HOME/kubespray
 
@@ -162,8 +157,7 @@ log_path = '"$PROJECT_HOME"'/kubespray/playbook.log \
 ' ansible.cfg
 ```
 
-**Step 6:** Generate the Ansible Host Inventory
-
+##### :memo: Generate the Ansible Host Inventory
 ```bash
 cd $PROJECT_HOME/kubespray && \
 cp -r inventory/sample inventory/k8cluster && \
@@ -171,8 +165,7 @@ declare -a IPS=( $(multipass list --format csv |tail -n +2 |cut -d "," -f3 | xar
 CONFIG_FILE=inventory/k8cluster/hosts.yml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
-**Step 7:** Update the Ubuntu nodes with Ansible play
-
+##### :memo: Update the Ubuntu nodes with Ansible play
 ```bash
 cat > initialsetup.yml <<EOF
 - hosts: all
@@ -195,9 +188,107 @@ EOF
 ansible-playbook -i inventory/k8cluster/hosts.yml ./initialsetup.yml -e ansible_user=ubuntu
 ```
 
-### B] Deploy the Kubernetes Cluster
+### B] Cluster Hardening Profile (OPTIONAL for StudyLab)
 
-**Step 1:** Configure the K8s cluster parameters
+##### :memo: Create the hardening yaml
+<details>
+<summary>hardening.yml</summary>
+
+```bash
+cd $PROJECT_HOME/kubespray
+cat > hardening.yml <<EOF
+# Hardening
+---
+
+## kube-apiserver
+authorization_modes: ['Node', 'RBAC']
+kube_apiserver_request_timeout: 120s
+kube_apiserver_service_account_lookup: true
+
+# enable kubernetes audit
+kubernetes_audit: true
+audit_log_path: "/var/log/kube-apiserver-log.json"
+audit_log_maxage: 30
+audit_log_maxbackups: 10
+audit_log_maxsize: 100
+
+tls_min_version: VersionTLS12
+tls_cipher_suites:
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+
+# enable encryption at rest
+kube_encrypt_secret_data: true
+kube_encryption_resources: [secrets]
+kube_encryption_algorithm: "secretbox"
+
+kube_apiserver_enable_admission_plugins:
+  - EventRateLimit
+  - AlwaysPullImages
+  - ServiceAccount
+  - NamespaceLifecycle
+  - NodeRestriction
+  - LimitRanger
+  - ResourceQuota
+  - MutatingAdmissionWebhook
+  - ValidatingAdmissionWebhook
+  - PodNodeSelector
+  - PodSecurity
+kube_apiserver_admission_control_config_file: true
+# EventRateLimit plugin configuration
+kube_apiserver_admission_event_rate_limits:
+  limit_1:
+    type: Namespace
+    qps: 50
+    burst: 100
+    cache_size: 2000
+  limit_2:
+    type: User
+    qps: 50
+    burst: 100
+kube_profiling: false
+
+## kube-controller-manager
+kube_controller_manager_bind_address: 127.0.0.1
+kube_controller_terminated_pod_gc_threshold: 50
+kube_controller_feature_gates: ["RotateKubeletServerCertificate=true"]
+
+## kube-scheduler
+kube_scheduler_bind_address: 127.0.0.1
+
+## kubelet
+kubelet_authorization_mode_webhook: true
+kubelet_authentication_token_webhook: true
+kube_read_only_port: 0
+kubelet_rotate_server_certificates: true
+kubelet_protect_kernel_defaults: true
+kubelet_event_record_qps: 1
+kubelet_rotate_certificates: true
+kubelet_streaming_connection_idle_timeout: "5m"
+kubelet_make_iptables_util_chains: true
+kubelet_feature_gates: ["RotateKubeletServerCertificate=true"]
+#kubelet_systemd_hardening: true
+# In case you have multiple interfaces in your
+# control plane nodes and you want to specify the right
+# IP addresses, kubelet_secure_addresses allows you
+# to specify the IP from which the kubelet
+# will receive the packets.
+#kubelet_secure_addresses: "192.168.10.110 192.168.10.111 192.168.10.112"
+
+# additional configurations
+kube_owner: root
+kube_cert_group: root
+
+# create a default Pod Security Configuration and deny running of insecure pods
+# kube_system namespace is exempted by default
+kube_pod_security_use_default: true
+kube_pod_security_default_enforce: restricted
+EOF
+```
+</details>
+
+### C] Deploy the Kubernetes Cluster
 
 ##### :memo: Backup original files
 ```bash
@@ -245,15 +336,18 @@ cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.
 sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 ```
 
-**Step 2:** Deploy the K8s cluster
-
-##### :memo: Run the deployment
+##### :memo: Run the deployment to create StudyLab
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root 
 ```
 
-##### :memo: Expected Output
+##### :memo: Run the deployment with Hardening Profile 
+##### :warning: Skip if previous option executed
+```bash
+cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
+```
 
+##### :memo: Expected Output
 ```
 PLAY RECAP  
 localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
@@ -304,8 +398,6 @@ download : download_container | Download image if required
 
 ### C] Setup CLI, Access the Cluster & Label the Nodes
 
-**Step 1:** Setup Kube config to authenticate and access the cluster
-
 ##### :memo: Connect to the first node
 ```bash
 multipass shell "$NODE_PREFIX"1
@@ -325,8 +417,7 @@ bash
 mkdir .kube && sudo cp /etc/kubernetes/admin.conf .kube/config && sudo chown ubuntu .kube/config
 ```
 
-**Step 2:** List the nodes and Label worker nodes as per your preference. 
-
+##### :memo: List the nodes and Label worker nodes as per your preference. 
 ```bash
 for i in $(k get nodes -o custom-columns=NAME:.metadata.name --no-headers)
 do
@@ -336,8 +427,6 @@ k get nodes
 ```
 
 ### D] Remove kube-proxy and Install Cilium CNI Plugin
-
-**Step 1:** Uninstall Kube-proxy
 
 ##### :memo: Delete the daemonset and configmap
 ```bash 
@@ -420,8 +509,6 @@ k get nodes
 
 ### E] Access the cluster with Kubernetes Dashboard
 
-**Step 1:** Configure Kubernetes Dashboard
-
 ##### :memo: Create service account
 ```bash
 ksn kube-system && k create sa dashboard 
@@ -452,8 +539,6 @@ export DASHBOARD_PORT=$(k get svc kubernetes-dashboard -o jsonpath='{.spec.ports
 export DASHBOARD_HOST=$(k get po -l k8s-app=kubernetes-dashboard -o jsonpath='{.items[0].status.hostIP}')
 ```
 
-**Step 2:** Access the Dashboard in Browser of your host Desktop/Laptop
-
 ##### :memo: Open the URL in your browser
 ```bash
 echo https://$DASHBOARD_HOST:$DASHBOARD_PORT
@@ -463,6 +548,7 @@ echo https://$DASHBOARD_HOST:$DASHBOARD_PORT
 ```bash
 k get secret dashboard -o jsonpath="{.data.token}" | base64 --decode
 ```
+
 ![dashboard-token](/images/dashboard_token.png)
 
 ![dashboard](/images/dashboard.png)
@@ -502,6 +588,8 @@ export HUBBLE_PORT=$(k get svc hubble-ui -o jsonpath='{.spec.ports[].nodePort}')
 export HUBBLE_HOST=$(k get po -l k8s-app=hubble-ui -o jsonpath='{.items[0].status.hostIP}')
 echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 ```
+
+![hubble](/images/hubble.png)
 
 ## Installation Steps for ISTIO Service Mesh
 
@@ -629,7 +717,18 @@ KBENCH_NAME=`curl -s \
 sudo apt -y install ./$KBENCH_NAME
 ```
 
-##### :memo: Run the CIS benchmark
+##### :memo: Run the CIS benchmark with Kube-Bench and remediate any CRITICAL,HIGH findings
 ```bash
 kube-bench  
+```
+##### :memo: Download & Install kubescape tool
+```bash
+curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash && \
+echo "export PATH=\$PATH:/home/ubuntu/.kubescape/bin" >> .bashrc && \
+bash
+```
+
+##### :memo: Run the CIS benchmark with KubeScape and remediate any CRITICAL,HIGH findings
+```bash
+kubescape scan framework CIS --enable-host-scan -e kubescape -v | tee results.txt
 ```
