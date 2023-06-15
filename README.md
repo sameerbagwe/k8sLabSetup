@@ -336,7 +336,7 @@ cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.
 sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 ```
 
-##### :memo: Run the deployment for StudyLab
+##### :memo: Run the deployment to create StudyLab
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e ansible_user=ubuntu -b --become-user=root 
 ```
