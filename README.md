@@ -191,7 +191,6 @@ ansible-playbook -i inventory/k8cluster/hosts.yml ./initialsetup.yml -e ansible_
 ### B] Cluster Hardening Profile
 
 ##### :memo: Create the hardening yaml
-<details>
 ```bash
 cd $PROJECT_HOME/kubespray
 cat > hardening.yml <<EOF
@@ -288,7 +287,6 @@ kube_pod_security_use_default: true
 kube_pod_security_default_enforce: restricted
 EOF
 ```
-</details>
 
 ### C] Deploy a Security Hardened Kubernetes Cluster
 
