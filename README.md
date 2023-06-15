@@ -257,9 +257,6 @@ kube_controller_feature_gates: ["RotateKubeletServerCertificate=true"]
 ## kube-scheduler
 kube_scheduler_bind_address: 127.0.0.1
 
-## etcd
-etcd_deployment_type: kubeadm
-
 ## kubelet
 kubelet_authorization_mode_webhook: true
 kubelet_authentication_token_webhook: true
@@ -270,8 +267,7 @@ kubelet_event_record_qps: 1
 kubelet_rotate_certificates: true
 kubelet_streaming_connection_idle_timeout: "5m"
 kubelet_make_iptables_util_chains: true
-kubelet_feature_gates: ["RotateKubeletServerCertificate=true", "SeccompDefault=true"]
-kubelet_seccomp_default: true
+kubelet_feature_gates: ["RotateKubeletServerCertificate=true"]
 kubelet_systemd_hardening: true
 # In case you have multiple interfaces in your
 # control plane nodes and you want to specify the right
@@ -342,7 +338,7 @@ sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
 
 ##### :memo: Run the deployment
 ```bash
-cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yaml" -e ansible_user=ubuntu -b --become-user=root 
+cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
 ```
 
 ##### :memo: Expected Output
