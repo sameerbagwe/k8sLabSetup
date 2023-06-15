@@ -268,7 +268,7 @@ kubelet_rotate_certificates: true
 kubelet_streaming_connection_idle_timeout: "5m"
 kubelet_make_iptables_util_chains: true
 kubelet_feature_gates: ["RotateKubeletServerCertificate=true"]
-kubelet_systemd_hardening: true
+#kubelet_systemd_hardening: true
 # In case you have multiple interfaces in your
 # control plane nodes and you want to specify the right
 # IP addresses, kubelet_secure_addresses allows you
