@@ -9,7 +9,7 @@
 - [Installation Steps for a Multi-node Kubernetes Cluster](#installation-steps-for-a-multi-node-kubernetes-cluster)
   - [Download and setup Kubespray](#a-download-and-setup-kubespray)
   - [Cluster Hardening Profile (OPTIONAL for StudyLab)](#b-cluster-hardening-profile-optional-for-studylab)
-  - [Deploy a Security Hardened Kubernetes Cluster](#c-deploy-a-security-hardened-kubernetes-cluster)
+  - [Deploy the Kubernetes Cluster](#c-deploy-the-kubernetes-cluster)
   - [Setup CLI, Access the Cluster & Label the Nodes](#c-setup-cli-access-the-cluster--label-the-nodes)
   - [Remove kube-proxy and Install Cilium CNI Plugin](#d-remove-kube-proxy-and-install-cilium-cni-plugin)
   - [Access the cluster with Kubernetes Dashboard](#e-access-the-cluster-with-kubernetes-dashboard)
@@ -288,7 +288,7 @@ EOF
 ```
 </details>
 
-### C] Deploy a Security Hardened Kubernetes Cluster
+### C] Deploy the Kubernetes Cluster
 
 ##### :memo: Backup original files
 ```bash
@@ -342,7 +342,7 @@ cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.ym
 ```
 
 ##### :memo: Run the deployment with Hardening Profile 
-##### :warning: Skip if previous option selected
+##### :warning: Skip if previous option executed
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
 ```
