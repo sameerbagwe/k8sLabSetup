@@ -610,7 +610,7 @@ KBENCH_NAME=`curl -s \
 sudo apt -y install ./$KBENCH_NAME
 ```
 
-##### :memo: Run the CIS benchmark with Kube-Bench
+##### :memo: Run the CIS benchmark with Kube-Bench and remediate any CRITICAL,HIGH findings
 ```bash
 kube-bench  
 ```
@@ -621,7 +621,7 @@ echo "export PATH=\$PATH:/home/ubuntu/.kubescape/bin" >> .bashrc && \
 bash
 ```
 
-##### :memo: Run the CIS benchmark with KubeScape
+##### :memo: Run the CIS benchmark with KubeScape and remediate any CRITICAL,HIGH findings
 ```bash
-kubescape scan framework CIS --enable-host-scan -v --format pdf --output results.pdf
+kubescape scan framework CIS --enable-host-scan -e kubescape -v | tee results.txt
 ```
