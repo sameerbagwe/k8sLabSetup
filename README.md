@@ -171,7 +171,7 @@ declare -a IPS=( $(multipass list --format csv |tail -n +2 |cut -d "," -f3 | xar
 CONFIG_FILE=inventory/k8cluster/hosts.yml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
-**Step 7:** Update the Ubuntu nodes with ansible play
+**Step 7:** Update the Ubuntu nodes with Ansible play
 
 ```bash
 cat > initialsetup.yml <<EOF
@@ -463,6 +463,10 @@ echo https://$DASHBOARD_HOST:$DASHBOARD_PORT
 ```bash
 k get secret dashboard -o jsonpath="{.data.token}" | base64 --decode
 ```
+![dashboard-token](/images/dashboard_token.png)
+
+![dashboard](/images/dashboard.png)
+
 
 ### F] Install Hubble - Network, Service & Security Observability for Kubernetes
 
