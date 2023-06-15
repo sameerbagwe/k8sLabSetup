@@ -463,6 +463,7 @@ echo https://$DASHBOARD_HOST:$DASHBOARD_PORT
 ```bash
 k get secret dashboard -o jsonpath="{.data.token}" | base64 --decode
 ```
+
 ![dashboard-token](/images/dashboard_token.png)
 
 ![dashboard](/images/dashboard.png)
@@ -502,6 +503,8 @@ export HUBBLE_PORT=$(k get svc hubble-ui -o jsonpath='{.spec.ports[].nodePort}')
 export HUBBLE_HOST=$(k get po -l k8s-app=hubble-ui -o jsonpath='{.items[0].status.hostIP}')
 echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 ```
+
+![hubble](/images/hubble.png)
 
 ## Installation Steps for ISTIO Service Mesh
 
