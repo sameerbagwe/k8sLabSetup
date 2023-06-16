@@ -608,6 +608,11 @@ helm install istiod istio/istiod -n istio-system --wait
 helm install istio-ingressgateway istio/gateway -n istio-system
 ```
 
+##### :warning: Install the CNI plugin if you applied POD security Hardening during deployment. Skip this step otherwise
+```bash
+helm install istio-cni istio/cni -n istio-system
+```
+
 ##### :memo: Verify the gateway is running
 ```bash
 ksn istio-system && k get pods 
@@ -644,13 +649,19 @@ k label namespace servicemesh istio-injection=enabled && \
 ksn servicemesh
 ```
 
-##### :memo: Install the booking app and gateway
+##### :warning: Install the POD Security compatible booking app. Skip this step otherwise.
 ```bash
-k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
 ```
+##### :memo: Install the booking app
+```bash
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
+```
+##### :memo: Verify Booking App pod is running
 ```bash
 k get pods
 ```
+##### :memo: Install the booking app gateway
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
