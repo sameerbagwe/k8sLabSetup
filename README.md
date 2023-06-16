@@ -224,7 +224,6 @@ kube_encryption_resources: [secrets]
 kube_encryption_algorithm: "secretbox"
 
 kube_apiserver_enable_admission_plugins:
-  - EventRateLimit
   - AlwaysPullImages
   - ServiceAccount
   - NamespaceLifecycle
@@ -236,17 +235,6 @@ kube_apiserver_enable_admission_plugins:
   - PodNodeSelector
   - PodSecurity
 kube_apiserver_admission_control_config_file: true
-# EventRateLimit plugin configuration
-kube_apiserver_admission_event_rate_limits:
-  limit_1:
-    type: Namespace
-    qps: 50
-    burst: 100
-    cache_size: 2000
-  limit_2:
-    type: User
-    qps: 50
-    burst: 100
 kube_profiling: false
 
 ## kube-controller-manager
@@ -261,13 +249,8 @@ kube_scheduler_bind_address: 127.0.0.1
 kubelet_authorization_mode_webhook: true
 kubelet_authentication_token_webhook: true
 kube_read_only_port: 0
-kubelet_rotate_server_certificates: true
 kubelet_protect_kernel_defaults: true
-kubelet_event_record_qps: 1
-kubelet_rotate_certificates: true
 kubelet_streaming_connection_idle_timeout: "5m"
-kubelet_make_iptables_util_chains: true
-kubelet_feature_gates: ["RotateKubeletServerCertificate=true"]
 #kubelet_systemd_hardening: true
 # In case you have multiple interfaces in your
 # control plane nodes and you want to specify the right
@@ -283,7 +266,7 @@ kube_cert_group: root
 # create a default Pod Security Configuration and deny running of insecure pods
 # kube_system namespace is exempted by default
 kube_pod_security_use_default: true
-kube_pod_security_default_enforce: restricted
+kube_pod_security_default_enforce: baseline
 EOF
 ```
 </details>
