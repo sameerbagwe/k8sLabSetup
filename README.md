@@ -655,7 +655,7 @@ k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo
 ```
 ##### :memo: Install the booking app
 ```bash
-k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
 ```
 ##### :memo: Verify Booking App pod is running
 ```bash
