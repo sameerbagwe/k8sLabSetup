@@ -332,8 +332,13 @@ sed -i '' "s~^metrics_server_enabled:.*~metrics_server_enabled: true~g" addons.y
 
 ##### :memo: Enable NTP sync
 ```bash
-cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.yml.BAK
-sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml
+cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp all.yml all.yml.BAK && cp etcd.yml etcd.yml.BAK
+sed -i '' "s~^ntp_enabled:.*~ntp_enabled: true~g" all.yml 
+```
+##### :memo: Deploy etcd with kubeadm
+```bash
+cd $PROJECT_HOME/kubespray/inventory/k8cluster/group_vars/all && cp etcd.yml etcd.yml.BAK
+sed -i '' "s~^etcd_deployment_type:.*~etcd_deployment_type: kubeadm~g" etcd.yml 
 ```
 
 ##### :memo: Run the deployment to create StudyLab
