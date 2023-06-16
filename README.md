@@ -267,7 +267,7 @@ kube_cert_group: root
 # kube_system namespace is exempted by default
 kube_pod_security_use_default: true
 kube_pod_security_default_enforce: baseline
-kube_pod_security_exemptions_namespaces
+kube_pod_security_exemptions_namespaces:
   - kube-system
   - istio-system
   - kubescape
