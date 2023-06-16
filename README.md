@@ -724,7 +724,7 @@ sudo apt -y install ./$KBENCH_NAME
 
 ##### :memo: Run the CIS benchmark with Kube-Bench and remediate any CRITICAL,HIGH findings
 ```bash
-kube-bench  
+sudo kube-bench  | tee kube-bench-results.txt
 ```
 ##### :memo: Download & Install kubescape tool
 ```bash
