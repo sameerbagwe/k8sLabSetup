@@ -603,23 +603,23 @@ helm install istio-base istio/base -n istio-system --create-namespace
 helm install istiod istio/istiod -n istio-system --wait
 ```
 
-##### :memo: This output will fail because the service is created as loadbalancer and there is no external IP available. Ignore for now
+##### :memo: Install the gateway
 ```bash
-helm install istio-ingressgateway istio/gateway -n istio-system --wait
+helm install istio-ingressgateway istio/gateway -n istio-system
 ```
 
 ##### :memo: Verify the gateway is running
 ```bash
-ksn istio-system && k get ingressgateway 
+ksn istio-system && k get pods 
 ```
 
 ### B] Install Addons: Kiali, Jaegar, Prometheus & Grafana
 
 ##### :memo: Install the add-ons
 ```bash
-k apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/kiali.yaml
-k apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/prometheus.yaml
-k apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/addons/grafana.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/addons/kiali.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/addons/prometheus.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/addons/grafana.yaml
 ```
 
 ##### :memo: Verify the deployment is ready
@@ -646,13 +646,13 @@ ksn servicemesh
 
 ##### :memo: Install the booking app and gateway
 ```bash
-k apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/bookinfo/platform/kube/bookinfo.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
 ```
 ```bash
 k get pods
 ```
 ```bash
-k apply -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/bookinfo/networking/bookinfo-gateway.yaml
+k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
 
 ##### :memo: Generate the URLs
