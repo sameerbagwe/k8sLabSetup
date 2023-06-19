@@ -20,6 +20,11 @@
   - [Install the sample Booking Micro-service App to test the Mesh](#c-install-the-sample-booking-micro-service-app-to-test-the-mesh)
   - [Uninstall the Booking App](#d-uninstall-the-booking-app-if-needed)
 - [Run CIS Kubernetes Benchmarks to secure the cluster](#run-cis-kubernetes-benchmarks-to-secure-the-cluster)
+- [Uninstall / Reset the Setup](#uninstall--reset-the-setup)
+  - [Uninstall Istio](#memo-uninstall-istio)
+  - [Reset the cluster](#memo-reset-the-cluster)
+  - [Delete and Purge the Virtual Nodes](#memo-delete-and-purge-the-virtual-nodes)
+- [Feedback](#feedback)  
 
 
 ## Overview
