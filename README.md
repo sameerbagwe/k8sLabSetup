@@ -586,7 +586,14 @@ echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 ## Installation Steps for ISTIO Service Mesh
 
 ### A] Install Istio
-
+##### :memo: If you applied Hardening policy during Cluster setup, then you need to install the Istio CNI plugin. 
+##### :warning: Skip this step if not using POD Security Admission Controller with baseline policy.
+```bash
+curl -L https://istio.io/downloadIstio | sh -  && \
+cd istio-* && \
+export PATH=$PWD/bin:$PATH && \
+istioctl install --set components.cni.enabled=true -y
+```
 ##### :memo: Install the Istio Helm repo
 ```bash
 helm repo add istio https://istio-release.storage.googleapis.com/charts && \
