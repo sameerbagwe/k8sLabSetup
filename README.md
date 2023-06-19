@@ -16,7 +16,7 @@
   - [Install Hubble - Network, Service & Security Observability for Kubernetes](#f-install-hubble---network-service--security-observability-for-kubernetes)
 - [Installation Steps for ISTIO Service Mesh](#installation-steps-for-istio-service-mesh)
   - [Install Istio](#a-install-istio)
-  - [Install Add-ons: Kiali, Jaegar, Prometheus & Grafana](#b-install-addons-kiali-jaegar-prometheus--grafana)
+  - [Install Add-ons: Kiali, Prometheus & Grafana](#b-install-addons-kiali-prometheus--grafana)
   - [Install the sample Booking Micro-service App to test the Mesh](#c-install-the-sample-booking-micro-service-app-to-test-the-mesh)
   - [Uninstall the Booking App](#d-uninstall-the-booking-app-if-needed)
 - [Run CIS Kubernetes Benchmarks to secure the cluster](#run-cis-kubernetes-benchmarks-to-secure-the-cluster)
