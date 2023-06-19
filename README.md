@@ -594,6 +594,10 @@ cd istio-* && \
 export PATH=$PWD/bin:$PATH && \
 istioctl install --set components.cni.enabled=true -y
 ```
+##### :memo: Verify Istio components are running
+```bash
+ksn istio-system && k get pods 
+```
 
 ##### :warning: Follow below steps for non-Hardened regular Cluster setup.
 ##### :memo: Install the Istio Helm repo
@@ -617,7 +621,7 @@ helm install istiod istio/istiod -n istio-system --wait
 helm install istio-ingressgateway istio/gateway -n istio-system
 ```
 
-##### :memo: Verify the gateway is running
+##### :memo: Verify Istio components are running
 ```bash
 ksn istio-system && k get pods 
 ```
