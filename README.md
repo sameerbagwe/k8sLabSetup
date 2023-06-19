@@ -587,7 +587,7 @@ echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 
 ### A] Install Istio 
 
-##### :warning: Follow below steps for cluster created with Hardening Policy with POD Security Admission and baseline policy.
+##### :warning: Follow below steps for a Hardened cluster with POD Security Admission Controller and baseline policy.
 ```bash
 curl -L https://istio.io/downloadIstio | sh -  && \
 cd istio-* && \
