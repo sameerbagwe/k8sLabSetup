@@ -1,0 +1,17 @@
+---
+# Initial Setup of Virtual Nodes.
+
+- hosts: all
+  become: true
+  tasks:   
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+    - name: Install pip, net-tools   
+      apt:
+        name: 
+          - pip
+          - net-tools
+        state: present
+        update_cache: true
