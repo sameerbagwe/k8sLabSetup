@@ -68,6 +68,7 @@ The goal of this tutorial is to be interactive and walk with the steps involved 
 
 ##### :memo: We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
 ```bash
+cat > ~/.k8slab_env <<EOF
 # Set desired Project Home
 export PROJECT_HOME=$HOME/Projects/k8s
 # No Change
@@ -88,6 +89,8 @@ DISK=10G
 export K8S_VERSION=v1.27.2
 # Set Desired cluster name. Avoid using "." in cluster name for eg homelab.local. Cilium installation will fail.
 export CLUSTER_NAME=homelab
+EOF
+source ~/.k8slab_env
 ```
 
 ##### :memo: Install Multipass and copy the SSH private key to home directory of current Mac user.
@@ -657,7 +660,7 @@ k label namespace servicemesh istio-injection=enabled && \
 ksn servicemesh
 ```
 
-##### Follow below steps for Hardened POD Security Admission setup
+##### :warning: Follow below steps for Hardened POD Security Admission setup
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
 ```
@@ -672,6 +675,11 @@ k get pods
 ##### :memo: Install the booking app gateway
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/bookinfo-gateway.yaml
+```
+
+##### :memo: Trigger synthetic load on the URL to generate the traffic graphs in Kiali and monitoring data in Grafana
+```bash
+for i in $(seq 1 100); do curl -s -o /dev/null "http://$BOOK_APP_URL/productpage";done
 ```
 
 ##### :memo: Generate the URLs
@@ -691,23 +699,20 @@ echo "http://$PROMETHEUS_URL"
 echo "http://$GRAFANA_URL"
 ```
 
-##### :memo: Trigger synthetic load on the URL to generate the traffic graphs in Kiali and monitoring data in Grafana
-```bash
-for i in $(seq 1 100); do curl -s -o /dev/null "http://$BOOK_APP_URL/productpage";done
-```
-
 ### D] Uninstall the Booking App if needed.
 
 ```bash
 ksn servicemesh && \
-k delete -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/bookinfo/platform/kube/bookinfo.yaml && \
-k delete -f https://raw.githubusercontent.com/istio/istio/release-1.18/samples/bookinfo/networking/bookinfo-gateway.yaml
+k delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml && \
+k delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml && \
+k delete -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
 
 ## Run CIS Kubernetes Benchmarks to secure the cluster
 
 ##### :memo: Download latest kube-bench tool
 ```bash
+cd ~ && \
 curl -s \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -719,6 +724,7 @@ curl -s \
 
 ##### :memo: Install kube-bench tool
 ```bash
+cd ~ && \
 KBENCH_NAME=`curl -s \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -743,3 +749,28 @@ bash
 ```bash
 kubescape scan framework CIS --enable-host-scan -e kubescape -v | tee results.txt
 ```
+
+##### :memo: Review the results from Kube-bench and Kube-scape. Follow the instructions to secure the cluster and meet compliance requirements.
+
+## Uninstall / Reset the Setup
+
+##### :memo: Uninstall Istio
+```bash
+istioctl uninstall --purge -y
+k delete ns istio-system
+k delete ns servicemesh
+```
+##### :memo: Reset the cluster
+```bash
+cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./reset.yml -e ansible_user=ubuntu -b --become-user=root 
+```
+##### :memo: Delete and Purge the Virtual Nodes
+```bash
+source ~/.k8slab_env
+multipass delete $(multipass list --format csv |tail -n +2 |grep $NODE_PREFIX | cut -d "," -f1 | xargs)
+multipass purge 
+```
+
+## Feedback
+
+##### Hopefully this Guide was resourceful, informative and easier to follow. Please leave your feedback or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
