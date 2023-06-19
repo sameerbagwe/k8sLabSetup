@@ -585,15 +585,17 @@ echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 
 ## Installation Steps for ISTIO Service Mesh
 
-### A] Install Istio
-##### :memo: If you applied Hardening policy during Cluster setup, then you need to install the Istio CNI plugin. 
-##### :warning: Skip this step if not using POD Security Admission Controller with baseline policy.
+### A] Install Istio 
+
+##### :warning: Follow below steps for cluster created with Hardening Policy with POD Security Admission and baseline policy. 
 ```bash
 curl -L https://istio.io/downloadIstio | sh -  && \
 cd istio-* && \
 export PATH=$PWD/bin:$PATH && \
 istioctl install --set components.cni.enabled=true -y
 ```
+
+##### :warning: Follow below steps for non-Hardened regular Cluster setup.
 ##### :memo: Install the Istio Helm repo
 ```bash
 helm repo add istio https://istio-release.storage.googleapis.com/charts && \
@@ -613,11 +615,6 @@ helm install istiod istio/istiod -n istio-system --wait
 ##### :memo: Install the gateway
 ```bash
 helm install istio-ingressgateway istio/gateway -n istio-system
-```
-
-##### :warning: Install the CNI plugin if you applied POD security Hardening during deployment. Skip this step otherwise
-```bash
-helm install istio-cni istio/cni -n istio-system
 ```
 
 ##### :memo: Verify the gateway is running
@@ -656,11 +653,11 @@ k label namespace servicemesh istio-injection=enabled && \
 ksn servicemesh
 ```
 
-##### :warning: Install the POD Security compatible booking app. Skip this step otherwise.
+##### :warning: Follow below steps for Hardened POD Security Admission setup
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
 ```
-##### :memo: Install the booking app
+##### :warning: Follow below steps for non-Hardened cluster setup.
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
 ```
