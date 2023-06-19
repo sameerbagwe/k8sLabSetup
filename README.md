@@ -634,7 +634,7 @@ helm install istio-ingressgateway istio/gateway -n istio-system
 ksn istio-system && k get pods 
 ```
 
-### B] Install Addons: Kiali, Jaegar, Prometheus & Grafana
+### B] Install Addons: Kiali, Prometheus & Grafana
 
 ##### :memo: Install the add-ons
 ```bash
@@ -698,11 +698,28 @@ export BOOK_APP_URL=$INGRESS_HOST:$BOOK_APP_PORT
 export KIALI_URL=$INGRESS_HOST:$KIALI_PORT
 export PROMETHEUS_URL=$INGRESS_HOST:$PROM_PORT
 export GRAFANA_URL=$INGRESS_HOST:$GRAFANA_PORT
-echo "http://$BOOK_APP_URL/productpage"
-echo "http://$KIALI_URL"
-echo "http://$PROMETHEUS_URL"
-echo "http://$GRAFANA_URL"
 ```
+```bash
+echo "Booking App: http://$BOOK_APP_URL/productpage"
+```
+![bookingapp](/images/booking-app.png)
+
+```bash
+echo "Kiali Dashboard: http://$KIALI_URL"
+```
+![kiali-main](/images/kiali-main.png)
+![kiali-graph](/images/kiali-graph.png)
+
+
+```bash
+echo "Prometheus Dashboard: http://$PROMETHEUS_URL"
+```
+![prometheus](/images/prometheus.png)
+
+```bash
+echo "Grafana Dashboard: http://$GRAFANA_URL"
+```
+![grafana](/images/grafana.png)
 
 ### D] Uninstall the Booking App if needed.
 
