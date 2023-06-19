@@ -334,7 +334,7 @@ cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.ym
 ```
 
 ##### :memo: Run the deployment with Hardening Profile 
-##### :warning: Skip if previous option executed
+##### :warning: <font color="red">Skip if previous option executed</font>
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
 ```
@@ -587,7 +587,7 @@ echo "http://$HUBBLE_HOST:$HUBBLE_PORT/?namespace=kube-system"
 
 ### A] Install Istio 
 
-##### :warning: Follow below steps for cluster created with Hardening Policy with POD Security Admission and baseline policy. 
+##### :warning: <font color="red">Follow below steps for cluster created with Hardening Policy with POD Security Admission and baseline policy. </font>
 ```bash
 curl -L https://istio.io/downloadIstio | sh -  && \
 cd istio-* && \
@@ -595,7 +595,7 @@ export PATH=$PWD/bin:$PATH && \
 istioctl install --set components.cni.enabled=true -y
 ```
 
-##### :warning: Follow below steps for non-Hardened regular Cluster setup.
+##### :warning: <font color="red">Follow below steps for non-Hardened regular Cluster setup.</font>
 ##### :memo: Install the Istio Helm repo
 ```bash
 helm repo add istio https://istio-release.storage.googleapis.com/charts && \
@@ -653,11 +653,11 @@ k label namespace servicemesh istio-injection=enabled && \
 ksn servicemesh
 ```
 
-##### :warning: Follow below steps for Hardened POD Security Admission setup
+##### :warning: <font color="red">Follow below steps for Hardened POD Security Admission setup</font>
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
 ```
-##### :warning: Follow below steps for non-Hardened cluster setup.
+##### :warning: <font color="red">Follow below steps for non-Hardened cluster setup.</font>
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
 ```
