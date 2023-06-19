@@ -35,3 +35,8 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Ignore sensitive information
+*.key
+*.pem
+*.env
