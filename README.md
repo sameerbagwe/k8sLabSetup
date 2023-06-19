@@ -334,7 +334,7 @@ cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.ym
 ```
 
 ##### :memo: Run the deployment with Hardening Profile 
-<p style="color:red">:warning: Skip if previous option executed</p>
+##### :warning: <span style="color:red">Skip if previous option executed</span>
 ```bash
 cd $PROJECT_HOME/kubespray && ansible-playbook -i ./inventory/k8cluster/hosts.yml ./cluster.yml -e "@hardening.yml" -e ansible_user=ubuntu -b --become-user=root 
 ```
