@@ -437,7 +437,7 @@ k get nodes
 ksn kube-system && k delete ds kube-proxy && k delete cm kube-proxy
 ```
 
-##### :memo: Dump the iptables rules to remove the Kube proxy rules 
+##### :memo: Dump and Restore the iptables rules to remove the Kube proxy rules 
 ##### :bulb: Run on all nodes from host ansible control node
 ```bash
 cd $PROJECT_HOME/kubespray && \
@@ -611,7 +611,7 @@ istioctl install --set components.cni.enabled=true -y
 ksn istio-system && k get pods 
 ```
 
-##### :warning: Follow below steps for non-Hardened regular Cluster setup.
+##### :warning: Follow below Helm steps for non-Hardened regular Cluster setup.
 ##### :memo: Install the Istio Helm repo
 ```bash
 helm repo add istio https://istio-release.storage.googleapis.com/charts && \
@@ -669,11 +669,11 @@ k label namespace servicemesh istio-injection=enabled && \
 ksn servicemesh
 ```
 
-##### :warning: Follow below steps for Hardened POD Security Admission setup
+##### :warning: Deploy the Pod Security Admission compatibe sample Booking App for Hardened Cluster
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-psa.yaml
 ```
-##### :warning: Follow below steps for non-Hardened cluster setup.
+##### :warning: Deploy the regular sample Booking App for non-Hardened Cluster
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml
 ```
@@ -681,7 +681,7 @@ k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo
 ```bash
 k get pods
 ```
-##### :memo: Install the booking app gateway
+##### :memo: Install the Booking App gateway (Required to expose the Booking app externally irrespective of a Hardened cluster)
 ```bash
 k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/networking/bookinfo-gateway.yaml
 ```
@@ -691,7 +691,7 @@ k apply -f https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo
 for i in $(seq 1 100); do curl -s -o /dev/null "http://$BOOK_APP_URL/productpage";done
 ```
 
-##### :memo: Generate the URLs
+##### :memo: Generate the External URLs
 ```bash
 export KIALI_PORT=$(k -n istio-system get svc kiali -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}')
 export PROM_PORT=$(k -n istio-system get svc prometheus -o jsonpath='{.spec.ports[].nodePort}')
@@ -783,6 +783,9 @@ kubescape scan framework CIS --enable-host-scan -e kubescape -v | tee results.tx
 istioctl uninstall --purge -y
 k delete ns istio-system
 k delete ns servicemesh
+
+# If Installed with Helm Chart
+helm delete -n istio-system $(helm ls -n istio-system --short | xargs) 
 ```
 ##### :memo: Reset the cluster
 ```bash
@@ -797,4 +800,5 @@ multipass purge
 
 ## Feedback
 
-##### Hopefully this Guide was resourceful, informative and easier to follow. Please leave your feedback or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
+##### Hopefully this Guide was resourceful, informative and easier to follow. In upcoming tutorials, we will look at AgroCD, CrossPlane and Auto cluster node scaling with builtin controller as well as Karpenter tool. 
+##### Please leave your feedback or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
