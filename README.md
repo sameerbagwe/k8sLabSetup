@@ -1,4 +1,4 @@
-# Setup a Kubernetes Study Lab on MacBook/iMac (M1)
+# Setup a Kubernetes HomeLab on MacBook/iMac (M1)
 
 ***In this Article:***
 - [Overview](#overview)
@@ -20,6 +20,10 @@
   - [Install the sample Booking Micro-service App to test the Mesh](#c-install-the-sample-booking-micro-service-app-to-test-the-mesh)
   - [Uninstall the Booking App](#d-uninstall-the-booking-app-if-needed)
 - [Run CIS Kubernetes Benchmarks to secure the cluster](#run-cis-kubernetes-benchmarks-to-secure-the-cluster)
+  - [Download & Install kube-bench tool](#memo-download-latest-kube-bench-tool)
+  - [Run the CIS benchmark with Kube-Bench and remediate any CRITICAL,HIGH findings](#memo-run-the-cis-benchmark-with-kube-bench-and-remediate-any-criticalhigh-findings)
+  - [Download & Install kubescape tool](#memo-download--install-kubescape-tool)
+  - [Run the CIS benchmark with KubeScape and remediate any CRITICAL,HIGH findings](#memo-run-the-cis-benchmark-with-kubescape-and-remediate-any-criticalhigh-findings)
 - [Uninstall / Reset the Setup](#uninstall--reset-the-setup)
   - [Uninstall Istio](#memo-uninstall-istio)
   - [Reset the cluster](#memo-reset-the-cluster)
@@ -771,8 +775,6 @@ bash
 ```bash
 kubescape scan framework CIS --enable-host-scan -e kubescape -v | tee results.txt
 ```
-
-##### :memo: Review the results from Kube-bench and Kube-scape. Follow the instructions to secure the cluster and meet compliance requirements.
 
 ## Uninstall / Reset the Setup
 
