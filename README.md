@@ -75,7 +75,8 @@ The goal of this tutorial is to be interactive and walk with the steps involved 
 
 ### A] Download and setup Kubespray
 
-##### :memo: We will use the iMac/Macbook as the Ansible control node.  Set the desired  environment parameters.
+##### :memo: We will use the iMac/Macbook as the Ansible control node.  
+##### :bulb: Set the desired  environment parameters.
 ```bash
 cat > ~/.k8slab_env <<EOF
 # Set desired Project Home
@@ -800,5 +801,5 @@ multipass purge
 
 ## Feedback
 
-##### Hopefully this Guide was resourceful, informative and easier to follow. In upcoming tutorials, we will look at AgroCD, CrossPlane and Auto cluster node scaling with builtin controller as well as Karpenter tool. 
+##### Hopefully this Guide was resourceful, informative and easier to follow. In upcoming tutorials, we will look at ArgoCD, CrossPlane and Auto cluster node scaling with builtin controller as well as Karpenter tool. 
 ##### Please leave your feedback or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
