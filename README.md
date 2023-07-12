@@ -802,4 +802,4 @@ multipass purge
 ## Feedback
 
 ##### Hopefully this Guide was resourceful, informative and easier to follow. In upcoming tutorials, we will look at ArgoCD, CrossPlane and Auto cluster node scaling with builtin controller as well as Karpenter tool. 
-##### Please leave your feedback or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
+##### Please leave your feedback https://github.com/sameerbagwe/k8sLabSetup/discussions or message me on [LinkedIn](https://www.linkedin.com/in/sameer-bagwe/)
